@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 
-image_col = sg.Column()
+image_col = sg.Column([[sg.Image(key = "-IMAGE-", background_color = "#FFFFFF")]])
 info_col = sg.Column([
     [sg.Text("", key = "-LOCATION-", font = "Calibri 30", background_color = "#FF0000", pad = 0, visible = False)],
     [sg.Text("", key = "-TIME-", font = "Calibri 16", background_color = "#000000", text_color = "#FFFFFF", pad = 0, visible = False)],
