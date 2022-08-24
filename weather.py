@@ -1,5 +1,8 @@
 import PySimpleGUI as sg
 
+# Setting this them will make the them white and match up better with our layout
+sg.theme("reddit")
+
 # Seperate these to clean up our second row in the layout
 image_col = sg.Column([[sg.Image(key = "-IMAGE-", background_color = "#FFFFFF")]])
 info_col = sg.Column([
