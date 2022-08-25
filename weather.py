@@ -62,7 +62,7 @@ while True:
         name, time, weather, temperature = get_weather_data(values["-INPUT-"])
         window["-LOCATION-"].update(name, visible = True)
         window["-TIME-"].update(time, visible = True)
-        window["-TEMP-"].update(temperature, visible = True)
+        window["-TEMP-"].update(f"{temperature} \u2109 ({weather})", visible = True)
         window["-IMAGE-"].update("symbols/snow.png")
 
 window.close()
