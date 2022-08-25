@@ -1,4 +1,29 @@
+from time import time
+from unicodedata import name
 import PySimpleGUI as sg
+from bs4 import BeautifulSoup as bs
+import requests
+
+def get_weather_data(location):
+    # We can just get our weather information from the data given by a Google search. When searching for weather
+    # on Google, the first part of the URL does not change, so we take that and add on our location to the URL.
+    # We also make sure to remove any spaces because URLs cannot have spaces
+    url = f"https://www.google.com/search?q=weather+{location.replace(' ', '')}"
+
+    session = requests.Session()
+    session.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"
+    html = session.get(url)
+
+    # Load in the data
+    soup = bs(html.text, "html.parser")
+    
+    # Saving the data from the HTML
+    name = soup.find("div", attrs = {"id": "wob_loc"}).text
+    time = soup.find("div", attrs = {"id": "wob_dts"}).text
+    weather = soup.find("span", attrs = {"id": "wob_dc"}).text
+    temperature = soup.find("span", attrs = {"id": "wob_tm"}).text
+
+    return name, time, weather, temperature
 
 # Setting this them will make the them white and match up better with our layout
 sg.theme("reddit")
@@ -34,9 +59,29 @@ while True:
 
     # If the user hits the Submit button, make the information visible
     if event == "Submit":
-        window["-LOCATION-"].update("test", visible = True)
-        window["-TIME-"].update("test", visible = True)
-        window["-TEMP-"].update("test", visible = True)
-        window["-IMAGE-"].update("symbols/snow.png")
+        name, time, weather, temperature = get_weather_data(values["-INPUT-"])
+        window["-LOCATION-"].update(name, visible = True)
+        window["-TIME-"].update(time, visible = True)
+        window["-TEMP-"].update(f"{temperature} \u2109 ({weather})", visible = True)
+        
+        # Matching Google weather conditions to images
+        # Sun
+        if weather in ('Sun','Sunny','Clear','Clear with periodic clouds', 'Mostly sunny'):
+            window['-IMAGE-'].update('symbols/sun.png')
+        # Part sun
+        if weather in ('Partly Sunny','Mostly Sunny','Partly cloudy','Mostly cloudy','Cloudy','Overcast'):
+            window['-IMAGE-'].update('symbols/part sun.png')
+        # Rain
+        if weather in ('Rain','Chance of Rain','Light Rain','Showers','Scattered Showers','Rain and Snow','Hail'):
+            window['-IMAGE-'].update('symbols/rain.png')
+        # Thunder
+        if weather in ('Scattered Thunderstorms','Chance of Storm','Storm','Thunderstorm','Chance of TStorm'):
+            window['-IMAGE-'].update('symbols/thunder.png')
+        # Foggy
+        if weather in ('Mist','Dust','Fog','Smoke','Haze','Flurries'):
+            window['-IMAGE-'].update('symbols/fog.png')
+        # snow
+        if weather in ('Freezing Drizzle','Chance of Snow','Sleet','Snow','Icy','Snow Showers'):
+            window['-IMAGE-'].update('symbols/snow.png')
 
 window.close()
